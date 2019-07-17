@@ -1,0 +1,9 @@
+[
+  {"packages": ["Laptop", "Mobile"], "destination": [15, 14]},
+  {"packages": ["Mobile"], "destination": [3, 1]},
+  {"packages": ["Laptop"], "destination": [1, 1]},
+  {"packages": ["Refrigerator"], "destination": [15, 9]},
+  {"packages": ["Tv"], "destination": [3, 5]},
+  {"packages": ["Tv", "Washing Machine"], "destination": [3, 5]},
+  {"packages": ["PC", "Washing Machine", "Tv", "Microwave Oven"], "destination":  [6, 7]}
+]
