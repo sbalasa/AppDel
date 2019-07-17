@@ -1,6 +1,7 @@
 # Electronic Appliance Delivery
 
 Company named **AppDel** delivers Electronic Appliances via Drones or Cyclists.
+
 Following are the product inventory:
 
 - Laptop
@@ -16,7 +17,7 @@ Following are the product inventory:
 `pip install -r requirements.txt`
 
 
-## Amend the delivery orders list in a json file
+## Add the delivery orders list in a json file
 Eg: `orders.json`
 
 
