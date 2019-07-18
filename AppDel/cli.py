@@ -24,12 +24,14 @@ total_vehicles = []
 
 
 class Vehicle:
-    def __init__(self, vehicle_id, vehicle_type, packages_loaded, total_weight, displacement):
+    def __init__(self, vehicle_id, vehicle_type, packages_loaded, total_weight, displacement, cost, estimated_time):
         self.vehicle_id = vehicle_id
         self.vehicle_type = vehicle_type
         self.packages_loaded = packages_loaded
         self.total_weight = total_weight
         self.displacement = displacement
+        self.cost = cost
+        self.estimated_time = estimated_time
 
     def __repr__(self):
         return self.vehicle_id
@@ -70,7 +72,7 @@ def get_displacement(distance: list) -> float:
     Returns:
         displacement (float): Square root of the distance from origin (0, 0)
     """
-    return math.sqrt(((distance[0])**2)+((distance[1])**2))
+    return math.sqrt(((distance[0]) ** 2) + ((distance[1]) ** 2))
 
 
 def generate_vehicle(weight: float) -> (str, str):
@@ -82,9 +84,9 @@ def generate_vehicle(weight: float) -> (str, str):
         vehicle_id, vehicle_type (tuple): Vehicle Id and Type of the vehicle either Drone or Cyclist
     """
     vehicle_type = "Cyclist" if weight > 5 else "Drone"
-    vehicle_id = "".join(
-        random.choice(string.ascii_letters).capitalize() for _ in range(2)
-    ) + "".join([str(random.randint(1, 9)) for _ in range(4)])
+    vehicle_id = "".join(random.choice(string.ascii_letters).capitalize() for _ in range(2)) + "".join(
+        [str(random.randint(1, 9)) for _ in range(4)]
+    )
     return vehicle_id, vehicle_type
 
 
@@ -97,12 +99,14 @@ def schedule_orders(orders: dict) -> None:
     for order in orders:
         total_weight = get_total_weight(order["packages"])
         vehicle_id, vehicle_type = generate_vehicle(total_weight)
+        displacement = get_displacement(order["destination"])  # Distance in km
+        cost = displacement * 5  # Cost is £5 / km
+        if vehicle_type == "Drone":
+            estimated_time = displacement / 30.0  # Speed of Drones are 30 km/hr
+        else:
+            estimated_time = displacement / 15.0  # Speed of Cyclists are 15 km/hr
         vehicle_object = Vehicle(
-            vehicle_id,
-            vehicle_type,
-            order["packages"],
-            total_weight,
-            get_displacement(order["destination"])
+            vehicle_id, vehicle_type, order["packages"], total_weight, displacement, cost, estimated_time
         )
         total_vehicles.append(vehicle_object)
 
