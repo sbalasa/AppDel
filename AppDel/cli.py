@@ -5,6 +5,7 @@ Main runner for ApplianceDelivery.
 
 
 import json
+import math
 import click
 import random
 import string
@@ -12,10 +13,26 @@ import logging
 
 
 from typing import TextIO
+from pprint import pprint
 from .lookup import PRODUCT_INVENTORY
 
 
 logger = logging.getLogger(__name__)
+
+
+total_vehicles = []
+
+
+class Vehicle:
+    def __init__(self, vehicle_id, vehicle_type, packages_loaded, total_weight, displacement):
+        self.vehicle_id = vehicle_id
+        self.vehicle_type = vehicle_type
+        self.packages_loaded = packages_loaded
+        self.total_weight = total_weight
+        self.displacement = displacement
+
+    def __repr__(self):
+        return self.vehicle_id
 
 
 def get_order(orders_file: str) -> json:
@@ -45,6 +62,17 @@ def get_total_weight(products: list) -> float:
     return total_weight
 
 
+def get_displacement(distance: list) -> float:
+    """
+    Function to get the displacement to be delivered by the Vehicle
+    Args:
+        distance (list): Co-ordinates of the distance in (x, y) format
+    Returns:
+        displacement (float): Square root of the distance from origin (0, 0)
+    """
+    return math.sqrt(((distance[0])**2)+((distance[1])**2))
+
+
 def generate_vehicle(weight: float) -> (str, str):
     """
     Function to choose the vehicle of delivery from the orders based on weight and destination
@@ -66,12 +94,17 @@ def schedule_orders(orders: dict) -> None:
     Args:
         orders (dict): Complete list of orders
     """
-    print("Vehicle_Id", "           ", "Vehicle_Type")
     for order in orders:
-        vehicle_id, vehicle_type = generate_vehicle(
-            get_total_weight(order["packages"])
+        total_weight = get_total_weight(order["packages"])
+        vehicle_id, vehicle_type = generate_vehicle(total_weight)
+        vehicle_object = Vehicle(
+            vehicle_id,
+            vehicle_type,
+            order["packages"],
+            total_weight,
+            get_displacement(order["destination"])
         )
-        print(vehicle_id, "                ", vehicle_type)
+        total_vehicles.append(vehicle_object)
 
 
 @click.command()
@@ -85,3 +118,5 @@ def main(orders_file: TextIO) -> None:
     logger.info(f"Processing orders from {orders_file}")
     orders = get_order(orders_file)
     schedule_orders(orders)
+    for vehicle in total_vehicles:
+        pprint(vars(vehicle))
